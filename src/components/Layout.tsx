@@ -13,20 +13,29 @@ export default function Layout({ children }: LayoutProps) {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
+    const html = document.documentElement;
     if (savedTheme === "dark") {
       setDarkMode(true);
-      document.documentElement.classList.add("dark");
+      html.classList.add("dark");
+      html.classList.remove("light");
+    } else {
+      setDarkMode(false);
+      html.classList.add("light");
+      html.classList.remove("dark");
     }
   }, []);
 
   const toggleDarkMode = () => {
+    const html = document.documentElement;
     setDarkMode((prev) => {
       const newValue = !prev;
       if (newValue) {
-        document.documentElement.classList.add("dark");
+        html.classList.add("dark");
+        html.classList.remove("light");
         localStorage.setItem("theme", "dark");
       } else {
-        document.documentElement.classList.remove("dark");
+        html.classList.remove("dark");
+        html.classList.add("light");
         localStorage.setItem("theme", "light");
       }
       return newValue;
@@ -34,16 +43,14 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-white transition-colors duration-300">
       <Header />
-
       <main className="flex-grow">{children}</main>
-
       <Footer />
 
       <button
         onClick={toggleDarkMode}
-        className="fixed bottom-6 right-6 p-3 rounded-full shadow-lg bg-gray-200 dark:bg-gray-700 hover:scale-110 transition"
+        className="fixed bottom-6 right-6 p-3 rounded-full shadow-lg bg-gray-200 hover:scale-110 transition dark:bg-gray-700"
         aria-label="Toggle Dark Mode"
       >
         {darkMode ? "🌙" : "☀️"}

@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+body, html {
+  background-color: white;
+  color: black;
+}
+
+.dark body, .dark html {
+  background-color: #1a202c; 
+  color: white;
+}
+
+a {
+  color: blue;
+}
+
+.dark a {
+  color: lightblue;
+}
+
+input, textarea {
+  background-color: white;
+  color: black;
+  border: 1px solid #ccc;
+}
+
+.dark input, .dark textarea {
+  background-color: #2d3748; 
+  color: white;
+  border-color: #4a5568; 
+}
+
+

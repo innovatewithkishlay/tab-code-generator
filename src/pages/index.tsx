@@ -64,7 +64,6 @@ const TabsGenerator: React.FC = () => {
   };
 
   const generateMarkup = () => {
-    const ids = tabLabels.map((_, i) => `panel-${i + 1}`);
 
     const buttonsHTML = tabLabels
       .map(

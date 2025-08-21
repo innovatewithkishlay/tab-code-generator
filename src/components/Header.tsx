@@ -85,7 +85,7 @@ const Header: React.FC = () => {
 
       {isMenuOpen && (
         <nav
-          className="absolute top-full left-0 right-0 border-t border-black bg-white dark:border-white dark:bg-gray-800 md:hidden"
+          className="menu-panel absolute top-full left-0 right-0 border-t md:hidden"
           role="menu"
           aria-label="Mobile Navigation"
         >

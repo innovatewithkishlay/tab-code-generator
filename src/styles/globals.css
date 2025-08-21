@@ -20,6 +20,31 @@ body, html {
 .dark .app-content {
   color: #f1f5f9;
 }
+/* Mobile menu panel styles */
+.menu-panel {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+  box-shadow: 0 2px 8px rgba(30,41,59,0.06);
+}
+.dark .menu-panel {
+  background: #23293a;
+  border-bottom: 1px solid #222a3a;
+  color: #f1f5f9;
+}
+.menu-panel a {
+  color: inherit;
+  display: block;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.menu-panel a:hover {
+  background: #f1f5f9;
+}
+.dark .menu-panel a:hover {
+  background: #334155;
+}
 /* --- Header --- */
 header {
   background: #fff;

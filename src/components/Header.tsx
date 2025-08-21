@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-
+import Cookies from "js-cookie";
 
 const NAV_ITEMS = [
   { label: "Tabs", path: "/" },
@@ -12,42 +12,49 @@ const NAV_ITEMS = [
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activePath, setActivePath] = useState<string>("/");
+
+  useEffect(() => {
+    const savedPath = Cookies.get("selectedNav");
+    if (savedPath) {
+      setActivePath(savedPath);
+    }
+  }, []);
+
+  const handleNavClick = (path: string) => {
+    setActivePath(path);
+    Cookies.set("selectedNav", path);
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 border-b bg-white dark:bg-gray-900 text-black dark:text-white border-black dark:border-white">
-
       <h1 className="text-lg font-bold">Title</h1>
-
 
       <nav className="hidden md:flex space-x-6">
         {NAV_ITEMS.map((item) => (
           <Link
-            key={item.label}
+            key={item.path}
             href={item.path}
-            className="hover:underline focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
+            className={`hover:underline focus:outline-none focus:ring-2 focus:ring-blue-400 rounded ${
+              activePath === item.path ? "font-bold underline" : ""
+            }`}
+            onClick={() => handleNavClick(item.path)}
           >
             {item.label}
           </Link>
         ))}
       </nav>
 
-
       <div className="flex items-center gap-4">
-        <span className="hidden sm:inline font-medium">
-          Student No. 21358295
-        </span>
-
+        <span className="hidden sm:inline font-medium">Student No. 21358295</span>
 
         <button
           onClick={() => setIsMenuOpen((prev) => !prev)}
           aria-label="Toggle menu"
           className="md:hidden focus:outline-none"
         >
-          <svg
-            className="w-6 h-6"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
+          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
             {isMenuOpen ? (
               <path
                 fillRule="evenodd"
@@ -67,11 +74,13 @@ const Header: React.FC = () => {
         <nav className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border-t border-black dark:border-white md:hidden">
           <ul className="flex flex-col p-4 space-y-3">
             {NAV_ITEMS.map((item) => (
-              <li key={item.label}>
+              <li key={item.path}>
                 <Link
                   href={item.path}
-                  className="block hover:underline"
-                  onClick={() => setIsMenuOpen(false)}
+                  className={`block hover:underline ${
+                    activePath === item.path ? "font-bold underline" : ""
+                  }`}
+                  onClick={() => handleNavClick(item.path)}
                 >
                   {item.label}
                 </Link>

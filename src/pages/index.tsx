@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
 const TabsGenerator: React.FC = () => {
   const [labels, setLabels] = useState<string[]>(["Tab 1", "Tab 2"]);
   const [contents, setContents] = useState<string[]>(["Content 1", "Content 2"]);
   const [exportedMarkup, setExportedMarkup] = useState<string>("");
+  const [selectedTab, setSelectedTab] = useState<number>(0);
+
+  useEffect(() => {
+    const savedTab = Cookies.get("selectedTabIndex");
+    if (savedTab !== undefined) {
+      setSelectedTab(parseInt(savedTab, 10));
+    }
+  }, []);
 
   const updateLabel = (idx: number, text: string) => {
     const copy = [...labels];
@@ -22,13 +31,20 @@ const TabsGenerator: React.FC = () => {
     setContents((prev) => [...prev, `Content ${prev.length + 1}`]);
   };
 
+  const selectTab = (idx: number) => {
+    setSelectedTab(idx);
+    Cookies.set("selectedTabIndex", idx.toString());
+  };
+
   const buildMarkup = () => {
     const ids = labels.map((_, i) => `pane-${i + 1}`);
 
     const buttonsHTML = labels
       .map(
         (txt, i) =>
-          `<button id="btn-${ids[i]}" class="tab-btn" onclick="activateTab('${ids[i]}', this)">${txt}</button>`
+          `<button id="btn-${ids[i]}" class="tab-btn" onclick="activateTab('${ids[i]}', this)" style="background-color: ${
+            i === selectedTab ? "#ccc" : "#eee"
+          };padding:6px;border:none;cursor:pointer;">${txt}</button>`
       )
       .join("");
 
@@ -36,8 +52,8 @@ const TabsGenerator: React.FC = () => {
       .map(
         (txt, i) =>
           `<div id="${ids[i]}" class="tab-pane" style="display:${
-            i === 0 ? "block" : "none"
-          };">${txt}</div>`
+            i === selectedTab ? "block" : "none"
+          };padding:12px;border:1px solid #aaa;border-top:none;font-family: Arial, sans-serif;">${txt}</div>`
       )
       .join("");
 
@@ -46,7 +62,7 @@ const TabsGenerator: React.FC = () => {
 function activateTab(id, clickedBtn) {
   document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
   document.getElementById(id).style.display = 'block';
-  
+
   document.querySelectorAll('.tab-btn').forEach(b => b.style.backgroundColor = '#eee');
   clickedBtn.style.backgroundColor = '#ccc';
 }
@@ -65,7 +81,7 @@ ${scriptBlock}`.trim();
   };
 
   return (
-    <div className="min-h-screen p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen p-6 bg-white dark:bg-gray-900 text-gray-900 dark:text-white pt-20">
       <h1 className="text-2xl font-bold mb-4">Custom Tab Generator</h1>
 
       <div className="mb-5">
@@ -94,6 +110,20 @@ ${scriptBlock}`.trim();
         >
           Add Another Tab
         </button>
+      </div>
+
+      <div className="mb-4 flex space-x-3">
+        {labels.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => selectTab(i)}
+            className={`px-4 py-2 rounded ${
+              selectedTab === i ? "bg-gray-400 dark:bg-gray-600" : "bg-gray-200 dark:bg-gray-700"
+            }`}
+          >
+            {labels[i]}
+          </button>
+        ))}
       </div>
 
       <button

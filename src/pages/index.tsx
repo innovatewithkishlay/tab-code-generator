@@ -12,7 +12,7 @@ const TabsGenerator: React.FC = () => {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  // Restore previously selected tab index from cookie
+  // Restore active tab index from cookie on mount
   useEffect(() => {
     const saved = Cookies.get("selectedTabIndex");
     if (saved !== undefined) {
@@ -21,15 +21,15 @@ const TabsGenerator: React.FC = () => {
   }, []);
 
   const updateLabel = (index: number, text: string) => {
-    const updated = [...tabLabels];
-    updated[index] = text;
-    setTabLabels(updated);
+    const copy = [...tabLabels];
+    copy[index] = text;
+    setTabLabels(copy);
   };
 
   const updateContent = (index: number, text: string) => {
-    const updated = [...tabContents];
-    updated[index] = text;
-    setTabContents(updated);
+    const copy = [...tabContents];
+    copy[index] = text;
+    setTabContents(copy);
   };
 
   const addTab = () => {
@@ -44,7 +44,6 @@ const TabsGenerator: React.FC = () => {
 
   const handleKeyNav = (e: React.KeyboardEvent<HTMLButtonElement>) => {
     let newIndex = activeTab;
-
     if (e.key === "ArrowRight") {
       newIndex = (activeTab + 1) % tabLabels.length;
       e.preventDefault();
@@ -58,7 +57,6 @@ const TabsGenerator: React.FC = () => {
       newIndex = tabLabels.length - 1;
       e.preventDefault();
     }
-
     if (newIndex !== activeTab) {
       selectTab(newIndex);
       tabRefs.current[newIndex]?.focus();
@@ -66,44 +64,116 @@ const TabsGenerator: React.FC = () => {
   };
 
   const generateMarkup = () => {
-    const ids = tabLabels.map((_, i) => `pane-${i + 1}`);
+    const ids = tabLabels.map((_, i) => `panel-${i + 1}`);
 
     const buttonsHTML = tabLabels
       .map(
-        (label, i) =>
-          `<button id="btn-${ids[i]}" class="tab-btn" onclick="activateTab('${ids[i]}', this)" style="background-color:${
-            i === activeTab ? "#ccc" : "#eee"
-          };padding:6px;border:none;cursor:pointer;">${label}</button>`
+        (label, i) => `
+        <button 
+          id="tab-${i + 1}" 
+          role="tab" 
+          aria-selected="${i === activeTab ? "true" : "false"}" 
+          aria-controls="panel-${i + 1}" 
+          data-role="tab-btn" 
+          tabindex="${i === activeTab ? 0 : -1}" 
+          style="background-color: ${i === activeTab ? "#ccc" : "#eee"}; padding: 6px; border: none; cursor: pointer;"
+          onclick="activateTab('panel-${i + 1}', this)"
+        >
+          ${label}
+        </button>
+      `
       )
       .join("");
 
     const panelsHTML = tabContents
       .map(
-        (content, i) =>
-          `<div id="${ids[i]}" class="tab-pane" style="display:${
-            i === activeTab ? "block" : "none"
-          };padding:12px;border:1px solid #aaa;border-top:none;font-family:Arial,sans-serif;">${content}</div>`
+        (content, i) => `
+        <div 
+          id="panel-${i + 1}" 
+          role="tabpanel" 
+          aria-labelledby="tab-${i + 1}" 
+          tabindex="${i === activeTab ? 0 : -1}"
+          data-role="tab-pane" 
+          style="display: ${i === activeTab ? "block" : "none"}; padding: 12px; border: 1px solid #aaa; border-top: none; font-family: Arial, sans-serif;"
+        >
+          ${content}
+        </div>
+      `
       )
       .join("");
 
     const scriptBlock = `
 <script>
-function activateTab(id, clickedBtn) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
-  document.getElementById(id).style.display = 'block';
-  document.querySelectorAll('.tab-btn').forEach(b => b.style.backgroundColor = '#eee');
-  clickedBtn.style.backgroundColor = '#ccc';
-}
-</script>`.trim();
+(function() {
+  function activateTab(id, clickedBtn) {
+    document.querySelectorAll('[data-role="tab-pane"]').forEach(pan => {
+      pan.style.display = 'none';
+      pan.setAttribute('tabindex', '-1');
+    });
+    document.querySelectorAll('[data-role="tab-btn"]').forEach(btn => {
+      btn.style.backgroundColor = '#eee';
+      btn.setAttribute('aria-selected', 'false');
+      btn.setAttribute('tabindex', '-1');
+    });
+    const panel = document.getElementById(id);
+    panel.style.display = 'block';
+    panel.setAttribute('tabindex', '0');
+
+    clickedBtn.style.backgroundColor = '#ccc';
+    clickedBtn.setAttribute('aria-selected', 'true');
+    clickedBtn.setAttribute('tabindex', '0');
+    clickedBtn.focus();
+  }
+
+  window.activateTab = activateTab;
+
+  document.addEventListener('keydown', function(e) {
+    const focused = document.activeElement;
+    if (!focused) return;
+    if (focused.getAttribute('data-role') !== 'tab-btn') return;
+
+    const tabs = Array.from(document.querySelectorAll('[data-role="tab-btn"]'));
+    let index = tabs.indexOf(focused);
+    if (index === -1) return;
+
+    switch(e.key) {
+      case 'ArrowRight':
+        e.preventDefault();
+        index = (index + 1) % tabs.length;
+        tabs[index].click();
+        tabs[index].focus();
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        index = (index - 1 + tabs.length) % tabs.length;
+        tabs[index].click();
+        tabs[index].focus();
+        break;
+      case 'Home':
+        e.preventDefault();
+        tabs[0].click();
+        tabs[0].focus();
+        break;
+      case 'End':
+        e.preventDefault();
+        tabs[tabs.length - 1].click();
+        tabs[tabs.length - 1].focus();
+        break;
+    }
+  });
+})();
+</script>
+`.trim();
 
     const finalOutput = `
-<div style="font-family:Arial,sans-serif;">
-  <div role="tablist" style="border-bottom:1px solid #aaa;padding-bottom:6px;">
+<div style="font-family: Arial, sans-serif;">
+  <div role="tablist" style="border-bottom: 1px solid #aaa; padding-bottom: 6px;">
     ${buttonsHTML}
   </div>
   ${panelsHTML}
 </div>
-${scriptBlock}`.trim();
+${scriptBlock}
+`.trim();
 
     setGeneratedMarkup(finalOutput);
     setCopied(false);
@@ -118,7 +188,6 @@ ${scriptBlock}`.trim();
     }
   };
 
-  // Show preview only when markup is visible
   const showPreview = showMarkup;
 
   return (
@@ -156,7 +225,9 @@ ${scriptBlock}`.trim();
         {tabLabels.map((label, i) => (
           <button
             key={i}
-            ref={el => { tabRefs.current[i] = el; }}
+            ref={el => {
+              tabRefs.current[i] = el;
+            }}
             id={`tab-${i}`}
             role="tab"
             aria-selected={activeTab === i}

@@ -1,14 +1,25 @@
 import React from "react";
 
+const tasks = [
+  "Find the hidden key in the code snippet.",
+  "Decode the encrypted message.",
+  "Solve the JavaScript puzzle.",
+  "Unlock the CSS secret door.",
+  "Complete the maze of functions.",
+];
+
 const EscapeRoom: React.FC = () => {
   return (
-    <section className="min-h-screen p-6 font-sans bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <h1 className="text-3xl font-semibold mb-4">Escape Room</h1>
-      <p className="text-lg">
-        Welcome to the Escape Room section. Content for this page will be added
-        soon.
-      </p>
-    </section>
+    <div className="min-h-screen p-6 pt-20 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-sans">
+      <h1 className="mb-6 text-3xl">Escape Room</h1>
+      <ul className="list-decimal list-inside space-y-2">
+        {tasks.map((task, idx) => (
+          <li key={idx} className="cursor-pointer hover:underline">
+            {task}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

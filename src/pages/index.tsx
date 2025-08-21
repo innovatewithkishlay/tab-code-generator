@@ -4,26 +4,29 @@ import Cookies from "js-cookie";
 const TabsGenerator: React.FC = () => {
   const [tabLabels, setTabLabels] = useState<string[]>(["Tab 1", "Tab 2"]);
   const [tabContents, setTabContents] = useState<string[]>(["Content 1", "Content 2"]);
-  const [markup, setMarkup] = useState<string>("");
-  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [generatedMarkup, setGeneratedMarkup] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const [copied, setCopied] = useState(false);
+  const [showMarkup, setShowMarkup] = useState(false);
 
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  // Restore last active tab from cookies
+  // Restore previously selected tab index from cookie
   useEffect(() => {
     const saved = Cookies.get("selectedTabIndex");
     if (saved !== undefined) {
-      setActiveIndex(parseInt(saved, 10));
+      setActiveTab(parseInt(saved, 10));
     }
   }, []);
 
-  const handleLabelChange = (index: number, text: string) => {
+  const updateLabel = (index: number, text: string) => {
     const updated = [...tabLabels];
     updated[index] = text;
     setTabLabels(updated);
   };
 
-  const handleContentChange = (index: number, text: string) => {
+  const updateContent = (index: number, text: string) => {
     const updated = [...tabContents];
     updated[index] = text;
     setTabContents(updated);
@@ -34,31 +37,31 @@ const TabsGenerator: React.FC = () => {
     setTabContents(prev => [...prev, `Content ${prev.length + 1}`]);
   };
 
-  const switchTab = (index: number) => {
-    setActiveIndex(index);
+  const selectTab = (index: number) => {
+    setActiveTab(index);
     Cookies.set("selectedTabIndex", index.toString());
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    let newIdx = activeIndex;
+  const handleKeyNav = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    let newIndex = activeTab;
 
     if (e.key === "ArrowRight") {
-      newIdx = (activeIndex + 1) % tabLabels.length;
+      newIndex = (activeTab + 1) % tabLabels.length;
       e.preventDefault();
     } else if (e.key === "ArrowLeft") {
-      newIdx = (activeIndex - 1 + tabLabels.length) % tabLabels.length;
+      newIndex = (activeTab - 1 + tabLabels.length) % tabLabels.length;
       e.preventDefault();
     } else if (e.key === "Home") {
-      newIdx = 0;
+      newIndex = 0;
       e.preventDefault();
     } else if (e.key === "End") {
-      newIdx = tabLabels.length - 1;
+      newIndex = tabLabels.length - 1;
       e.preventDefault();
     }
 
-    if (newIdx !== activeIndex) {
-      switchTab(newIdx);
-      tabRefs.current[newIdx]?.focus();
+    if (newIndex !== activeTab) {
+      selectTab(newIndex);
+      tabRefs.current[newIndex]?.focus();
     }
   };
 
@@ -68,42 +71,58 @@ const TabsGenerator: React.FC = () => {
     const buttonsHTML = tabLabels
       .map(
         (label, i) =>
-          `<button id="btn-${ids[i]}" class="tab-btn" onclick="activateTab('${ids[i]}', this)" style="background-color:${i === activeIndex ? "#ccc" : "#eee"};padding:6px;border:none;cursor:pointer;">${label}</button>`
+          `<button id="btn-${ids[i]}" class="tab-btn" onclick="activateTab('${ids[i]}', this)" style="background-color:${
+            i === activeTab ? "#ccc" : "#eee"
+          };padding:6px;border:none;cursor:pointer;">${label}</button>`
       )
       .join("");
 
     const panelsHTML = tabContents
       .map(
         (content, i) =>
-          `<div id="${ids[i]}" class="tab-pane" style="display:${i === activeIndex ? "block" : "none"};padding:12px;border:1px solid #aaa;border-top:none;font-family:Arial,sans-serif;">${content}</div>`
+          `<div id="${ids[i]}" class="tab-pane" style="display:${
+            i === activeTab ? "block" : "none"
+          };padding:12px;border:1px solid #aaa;border-top:none;font-family:Arial,sans-serif;">${content}</div>`
       )
       .join("");
 
-    const script = `
+    const scriptBlock = `
 <script>
 function activateTab(id, clickedBtn) {
   document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
   document.getElementById(id).style.display = 'block';
-
   document.querySelectorAll('.tab-btn').forEach(b => b.style.backgroundColor = '#eee');
   clickedBtn.style.backgroundColor = '#ccc';
 }
-</script>`;
+</script>`.trim();
 
-    const html = `
+    const finalOutput = `
 <div style="font-family:Arial,sans-serif;">
   <div role="tablist" style="border-bottom:1px solid #aaa;padding-bottom:6px;">
     ${buttonsHTML}
   </div>
   ${panelsHTML}
 </div>
-${script}`.trim();
+${scriptBlock}`.trim();
 
-    setMarkup(html);
+    setGeneratedMarkup(finalOutput);
+    setCopied(false);
+    setShowMarkup(true);
   };
 
+  const copyMarkup = () => {
+    if (textareaRef.current) {
+      navigator.clipboard.writeText(generatedMarkup);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }
+  };
+
+  // Show preview only when markup is visible
+  const showPreview = showMarkup;
+
   return (
-    <div className="min-h-screen p-6 pt-20 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen flex flex-col bg-white p-6 pt-20 text-gray-900 dark:bg-gray-900 dark:text-white">
       <h1 className="mb-4 text-2xl font-bold">Custom Tab Generator</h1>
 
       <div className="mb-5">
@@ -112,20 +131,19 @@ ${script}`.trim();
             <input
               type="text"
               value={label}
-              onChange={e => handleLabelChange(i, e.target.value)}
+              onChange={e => updateLabel(i, e.target.value)}
               className="w-40 rounded border p-2 dark:bg-gray-800 dark:text-white"
               placeholder={`Label ${i + 1}`}
             />
             <input
               type="text"
               value={tabContents[i]}
-              onChange={e => handleContentChange(i, e.target.value)}
+              onChange={e => updateContent(i, e.target.value)}
               className="flex-1 rounded border p-2 dark:bg-gray-800 dark:text-white"
               placeholder={`Content ${i + 1}`}
             />
           </div>
         ))}
-
         <button
           onClick={addTab}
           className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
@@ -134,22 +152,20 @@ ${script}`.trim();
         </button>
       </div>
 
-      <div role="tablist" aria-label="Custom Tabs" className="mb-4 flex space-x-3">
+      <div className="mb-4 flex space-x-3">
         {tabLabels.map((label, i) => (
           <button
             key={i}
-            ref={el => {
-              tabRefs.current[i] = el;
-            }}
+            ref={el => { tabRefs.current[i] = el; }}
             id={`tab-${i}`}
             role="tab"
-            aria-selected={activeIndex === i}
+            aria-selected={activeTab === i}
             aria-controls={`panel-${i}`}
-            tabIndex={activeIndex === i ? 0 : -1}
-            onClick={() => switchTab(i)}
-            onKeyDown={handleKeyDown}
+            tabIndex={activeTab === i ? 0 : -1}
+            onClick={() => selectTab(i)}
+            onKeyDown={handleKeyNav}
             className={`px-4 py-2 rounded ${
-              activeIndex === i
+              activeTab === i
                 ? "bg-gray-400 dark:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 : "bg-gray-200 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             }`}
@@ -159,33 +175,57 @@ ${script}`.trim();
         ))}
       </div>
 
-      {tabContents.map((content, i) => (
+      {showPreview && (
         <div
-          key={i}
-          id={`panel-${i}`}
+          id={`panel-${activeTab}`}
           role="tabpanel"
-          aria-labelledby={`tab-${i}`}
-          hidden={activeIndex !== i}
-          className="border border-t-0 p-4"
+          aria-labelledby={`tab-${activeTab}`}
+          className="border rounded mb-10 mt-2 bg-white dark:bg-gray-900 p-5 shadow-sm"
+          style={{ minHeight: 56 }}
         >
-          {content}
+          {tabContents[activeTab]}
         </div>
-      ))}
+      )}
 
-      <button
-        onClick={generateMarkup}
-        className="mb-4 rounded bg-green-600 px-6 py-3 text-white hover:bg-green-700"
-      >
-        Generate Markup
-      </button>
+      <div className="mb-4 flex items-center gap-4">
+        <button
+          onClick={generateMarkup}
+          className="rounded bg-green-600 px-6 py-3 text-white hover:bg-green-700"
+        >
+          Generate Markup
+        </button>
+        {generatedMarkup && (
+          <button
+            onClick={() => setShowMarkup(s => !s)}
+            className="rounded border border-gray-200 bg-gray-100 px-4 py-2 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+          >
+            {showMarkup ? "Hide Markup" : "Show Markup"}
+          </button>
+        )}
+      </div>
 
-      {markup && (
-        <textarea
-          readOnly
-          rows={15}
-          value={markup}
-          className="w-full rounded border p-4 font-mono dark:bg-gray-800 dark:text-green-400"
-        />
+      {showMarkup && generatedMarkup && (
+        <div className="mb-10">
+          <textarea
+            readOnly
+            ref={textareaRef}
+            rows={15}
+            value={generatedMarkup}
+            onFocus={e => e.currentTarget.select()}
+            aria-label="Generated HTML code"
+            className="w-full rounded border p-4 font-mono dark:bg-gray-800 dark:text-green-400"
+            style={{ fontSize: 14, resize: "vertical" }}
+          />
+          <div className="mt-2 flex">
+            <button
+              type="button"
+              onClick={copyMarkup}
+              className="mr-auto rounded bg-gray-900 px-4 py-2 text-white hover:bg-gray-700 dark:bg-gray-200 dark:text-black dark:hover:bg-gray-400"
+            >
+              {copied ? "Copied!" : "Copy Code"}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

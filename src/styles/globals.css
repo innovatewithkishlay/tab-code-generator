@@ -1,33 +1,131 @@
 @import "tailwindcss";
 
+
+/* --- General Layout --- */
+html, body {
+  min-height: 100vh;
+}
+
 body, html {
-  background-color: white;
-  color: black;
+  background: #f9fafb;
+  color: #1e293b;
+  font-family: "Inter", sans-serif;
 }
 
 .dark body, .dark html {
-  background-color: #1a202c; 
-  color: white;
+  background: #181c24;
+  color: #f1f5f9;
 }
 
-a {
-  color: blue;
+/* --- Header --- */
+header {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+  transition: background 0.3s;
+}
+.dark header {
+  background: #23293a;
+  border-bottom: 1px solid #222a3a;
+  color: #f1f5f9;
 }
 
-.dark a {
-  color: lightblue;
+/* --- Navbar --- */
+nav a {
+  color: #334155;
+  transition: color 0.2s;
+}
+nav a:hover, nav a[aria-current="page"] {
+  color: #2563eb;
+  font-weight: 600;
+}
+.dark nav a {
+  color: #cbd5e1;
+}
+.dark nav a:hover, .dark nav a[aria-current="page"] {
+  color: #38bdf8;
 }
 
-input, textarea {
-  background-color: white;
-  color: black;
-  border: 1px solid #ccc;
+/* --- Footer --- */
+footer {
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  color: #334155;
+  padding: 1rem;
+}
+.dark footer {
+  background: #23293a;
+  border-top: 1px solid #222a3a;
+  color: #cbd5e1;
 }
 
-.dark input, .dark textarea {
-  background-color: #2d3748; 
-  color: white;
-  border-color: #4a5568; 
+/* --- Buttons --- */
+button, input[type="button"], input[type="submit"] {
+  background: #2563eb;
+  color: #fff;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  box-shadow: 0 1px 2px rgba(50,60,70,0.06);
+  font-weight: 500;
+  transition: background 0.16s;
+}
+button:hover, input[type="button"]:hover {
+  background: #1d4ed8;
+}
+button:focus, input[type="button"]:focus {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+.dark button, .dark input[type="button"], .dark input[type="submit"] {
+  background: #2563eb;
+  color: #f1f5f9;
+}
+.dark button:hover {
+  background: #60a5fa;
 }
 
+/* --- Inputs & Textareas --- */
+input[type="text"], textarea {
+  background: #f3f4f6;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.375rem;
+  color: #1e293b;
+  padding: 0.5rem 0.8rem;
+  transition: border 0.2s, background 0.2s;
+}
+input[type="text"]:focus, textarea:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+.dark input[type="text"], .dark textarea {
+  background: #242b37;
+  color: #f1f5f9;
+  border: 1px solid #334155;
+}
+.dark input[type="text"]:focus, .dark textarea:focus {
+  border-color: #60a5fa;
+}
 
+/* --- Tabs & Content Boxes --- */
+.border, .tab-pane {
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  border-radius: 0.5rem;
+  color: #1e293b;
+  box-shadow: 0 1px 2px rgba(50,60,70,0.04);
+}
+.dark .border, .dark .tab-pane {
+  border: 1.5px solid #334155;
+  background: #23293a;
+  color: #f1f5f9;
+  box-shadow: 0 1px 2px rgba(10,20,40,0.16);
+}
+
+/* --- Scrollbar for dark mode --- */
+.dark ::-webkit-scrollbar {
+  background: #23293a;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}

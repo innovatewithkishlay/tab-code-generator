@@ -122,7 +122,7 @@ ${scriptBlock}`.trim();
   const showPreview = showMarkup;
 
   return (
-    <div className="min-h-screen flex flex-col bg-white p-6 pt-20 text-gray-900 dark:bg-gray-900 dark:text-white">
+    <div className="min-h-screen flex flex-col p-6 pt-20 text-gray-900 dark:bg-gray-900 dark:text-white">
       <h1 className="mb-4 text-2xl font-bold">Custom Tab Generator</h1>
 
       <div className="mb-5">

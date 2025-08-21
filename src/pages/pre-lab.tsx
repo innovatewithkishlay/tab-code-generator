@@ -10,9 +10,7 @@ const preLabQuestions = [
 
 const PreLab: React.FC = () => {
   return (
-    <div
-      className="p-6 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 pt-20 font-sans"
-    >
+       <div className="app-content min-h-screen p-6 pt-20 bg-inherit font-sans">
       <h1 className="text-3xl mb-6">Pre-lab Questions</h1>
       <ul className="list-disc list-inside space-y-2">
         {preLabQuestions.map((question, index) => (

@@ -8,15 +8,18 @@ html, body {
 
 body, html {
   background: #f9fafb;
-  color: #1e293b;
   font-family: "Inter", sans-serif;
 }
 
 .dark body, .dark html {
   background: #181c24;
+}
+.app-content {
+  color: #1e293b;
+}
+.dark .app-content {
   color: #f1f5f9;
 }
-
 /* --- Header --- */
 header {
   background: #fff;

@@ -10,7 +10,7 @@ const escapeRoomTasks = [
 
 const EscapeRoom: React.FC = () => {
   return (
-    <div className="p-6 min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white pt-20 font-sans">
+    <div className="app-content min-h-screen p-6 pt-20 bg-inherit font-sans">
       <h1 className="text-3xl mb-6">Escape Room</h1>
       <ul className="list-decimal list-inside space-y-2">
         {escapeRoomTasks.map((task, index) => (

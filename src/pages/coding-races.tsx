@@ -10,13 +10,13 @@ const races = [
 
 const CodingRaces: React.FC = () => {
   return (
-    <div className="min-h-screen p-6 pt-20 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-sans">
+    <div className="app-content min-h-screen p-6 pt-20 bg-inherit font-sans">
       <h1 className="mb-6 text-3xl">Coding Races</h1>
       <ul className="list-disc list-inside space-y-2">
         {races.map((race, idx) => (
           <li key={idx} className="cursor-pointer hover:underline">
             {race}
-          </li>
+          </li> 
         ))}
       </ul> 
     </div>

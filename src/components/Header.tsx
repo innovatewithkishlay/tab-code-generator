@@ -53,7 +53,9 @@ const Header: React.FC = () => {
       </nav>
 
       <div className="flex items-center gap-4">
-        <span className="hidden font-medium sm:inline">Student ID: 21358295</span>
+<span className="fixed top-4 left-4 z-50 font-medium bg-gray-200 dark:bg-gray-800 p-2 rounded text-sm text-gray-800 dark:text-gray-200">
+  Student ID: 21358295
+</span>
         <button
           onClick={() => setIsMenuOpen(prev => !prev)}
           aria-label="Toggle menu"

@@ -1,14 +1,25 @@
 import React from "react";
 
+const questions = [
+  "What is HTML5?",
+  "Explain the difference between let, var, and const in JavaScript.",
+  "Describe the box model in CSS.",
+  "What are semantic HTML elements?",
+  "Explain event bubbling and capturing.",
+];
+
 const PreLab: React.FC = () => {
   return (
-    <main className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-sans p-6">
-      <h1 className="text-3xl font-semibold mb-4">Pre-Lab Questions</h1>
-      <p className="text-lg">
-        Welcome! This page will hold the Pre-Lab questions. Content is coming
-        soon.
-      </p>
-    </main>
+    <div className="min-h-screen p-6 pt-20 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-sans">
+      <h1 className="mb-6 text-3xl">Pre-lab Questions</h1>
+      <ul className="list-disc list-inside space-y-2">
+        {questions.map((item, idx) => (
+          <li key={idx} className="cursor-pointer hover:underline">
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

@@ -1,14 +1,25 @@
 import React from "react";
 
+const races = [
+  "100m JavaScript Sprint",
+  "CSS Styling Marathon",
+  "Algorithm Challenge 5K",
+  "React Relay Race",
+  "Debugging Decathlon",
+];
+
 const CodingRaces: React.FC = () => {
   return (
-    <section className="min-h-screen p-6 font-sans bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      <h1 className="text-3xl font-semibold mb-4">Coding Races</h1>
-      <p className="text-lg">
-        Welcome to the Coding Races section.  This is where you’ll find coding challenges and activities.  
-        Content for this page will be added soon.
-      </p>
-    </section>
+    <div className="min-h-screen p-6 pt-20 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-sans">
+      <h1 className="mb-6 text-3xl">Coding Races</h1>
+      <ul className="list-disc list-inside space-y-2">
+        {races.map((race, idx) => (
+          <li key={idx} className="cursor-pointer hover:underline">
+            {race}
+          </li>
+        ))}
+      </ul> 
+    </div>
   );
 };
 

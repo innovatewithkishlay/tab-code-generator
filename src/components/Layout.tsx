@@ -1,9 +1,10 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import Header from "./Header";
 import Footer from "./Footer";
-import Breadcrumbs from "./Breadcrumbs"; 
+import Breadcrumbs from "./Breadcrumbs";
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,51 +14,62 @@ export default function Layout({ children }: LayoutProps) {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const html = document.documentElement;
-    if (savedTheme === "dark") {
+    const storedTheme = localStorage.getItem("theme");
+    const htmlElement = document.documentElement;
+
+    if (storedTheme === "dark") {
       setDarkMode(true);
-      html.classList.add("dark");
-      html.classList.remove("light");
+      htmlElement.classList.add("dark");
+      htmlElement.classList.remove("light");
     } else {
       setDarkMode(false);
-      html.classList.add("light");
-      html.classList.remove("dark");
+      htmlElement.classList.add("light");
+      htmlElement.classList.remove("dark");
     }
   }, []);
 
   const toggleDarkMode = () => {
-    const html = document.documentElement;
-    setDarkMode(prev => {
-      const newMode = !prev;
-      if (newMode) {
-        html.classList.add("dark");
-        html.classList.remove("light");
+    const htmlElement = document.documentElement;
+
+    setDarkMode((prev) => {
+      const nextMode = !prev;
+
+      if (nextMode) {
+        htmlElement.classList.add("dark");
+        htmlElement.classList.remove("light");
         localStorage.setItem("theme", "dark");
       } else {
-        html.classList.remove("dark");
-        html.classList.add("light");
+        htmlElement.classList.remove("dark");
+        htmlElement.classList.add("light");
         localStorage.setItem("theme", "light");
       }
-      return newMode;
+
+      return nextMode;
     });
   };
 
   return (
-        <div className="min-h-screen flex flex-col transition-colors duration-300 bg-inherit">
+    <div className="min-h-screen flex flex-col bg-inherit transition-colors duration-300 relative">
       <Header />
-      <div className="pt-3">
-          <Breadcrumbs />
-      </div>      
-      <main className="flex-grow">{children}</main>
+      <main className="flex-grow pt-3">
+        <Breadcrumbs />
+        {children}
+      </main>
+      {/* Give space for fixed footer */}
+      <div className="h-[64px] md:h-[52px]" />
       <Footer />
-      <button
-        onClick={toggleDarkMode}
+
+      <motion.button
         aria-label="Toggle Dark Mode"
-        className="fixed bottom-6 right-6 rounded-full bg-gray-200 p-3 shadow-lg transition hover:scale-110 dark:bg-gray-700"
+        onClick={toggleDarkMode}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="fixed bottom-[84px] right-6 z-50 rounded-full bg-gray-200 p-3 shadow-lg text-2xl text-gray-700 dark:bg-gray-700 dark:text-gray-200 border border-blue-200 dark:border-blue-900"
+        style={{ pointerEvents: "auto" }}
       >
         {darkMode ? "🌙" : "☀️"}
-      </button>
+      </motion.button>
     </div>
   );
 }

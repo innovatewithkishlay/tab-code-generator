@@ -46,7 +46,9 @@ export default function Layout({ children }: LayoutProps) {
   return (
         <div className="min-h-screen flex flex-col transition-colors duration-300 bg-inherit">
       <Header />
-      <Breadcrumbs />
+      <div className="pt-3">
+          <Breadcrumbs />
+      </div>      
       <main className="flex-grow">{children}</main>
       <Footer />
       <button

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
-const TYPE_SPEED = 60; // ms per character
+const TYPE_SPEED = 60; // milliseconds per character for typing effect
 
 const About: React.FC = () => {
-  const fullTexts = {
+  const texts = {
     heading: "About Me",
     name: "Name: Rohan Khurana",
     studentId: "Student ID: 21358295",
@@ -15,7 +15,7 @@ const About: React.FC = () => {
       "This site allows users to generate HTML tabs with code that is fully inline styled for easy sharing and use. Simply navigate to the Code Generator, input your content and customize styles as needed, then copy the generated code. Save the output as an HTML file (for example, Hello.html) and open it in any web browser to view your styled tabs. The intuitive interface helps users create clean, portable HTML snippets quickly without the need for external CSS files.",
   };
 
-  // State for typed text
+  // States to control typed text for each section
   const [typedHeading, setTypedHeading] = useState("");
   const [typedName, setTypedName] = useState("");
   const [typedStudentId, setTypedStudentId] = useState("");
@@ -23,70 +23,43 @@ const About: React.FC = () => {
   const [typedHowToUseHeading, setTypedHowToUseHeading] = useState("");
   const [typedHowToUseText, setTypedHowToUseText] = useState("");
 
-  // Function to incrementally type text
-  const typeText = (
+  // Function to type text progressively
+  const typeWriter = (
     text: string,
-    setter: React.Dispatch<React.SetStateAction<string>>,
-    delayBeforeStart = 0
+    updateFunc: React.Dispatch<React.SetStateAction<string>>,
+    startDelay = 0
   ) => {
-    let index = 0;
+    let charIndex = 0;
     setTimeout(() => {
-      const interval = setInterval(() => {
-        setter(text.slice(0, index + 1));
-        index++;
-        if (index === text.length) {
-          clearInterval(interval);
-        }
+      const intervalId = setInterval(() => {
+        updateFunc(text.slice(0, charIndex + 1));
+        charIndex++;
+        if (charIndex >= text.length) clearInterval(intervalId);
       }, TYPE_SPEED);
-    }, delayBeforeStart);
+    }, startDelay);
   };
 
   useEffect(() => {
-    // Sequential typing for block of texts with delays
-    typeText(fullTexts.heading, setTypedHeading);
-    typeText(
-      fullTexts.name,
-      setTypedName,
-      fullTexts.heading.length * TYPE_SPEED + 300
-    );
-    typeText(
-      fullTexts.studentId,
-      setTypedStudentId,
-      fullTexts.heading.length * TYPE_SPEED +
-        fullTexts.name.length * TYPE_SPEED +
-        600
-    );
-    typeText(
-      fullTexts.description,
-      setTypedDescription,
-      fullTexts.heading.length * TYPE_SPEED +
-        fullTexts.name.length * TYPE_SPEED +
-        fullTexts.studentId.length * TYPE_SPEED +
-        900
-    );
-    typeText(
-      fullTexts.howToUseHeading,
-      setTypedHowToUseHeading,
-      fullTexts.heading.length * TYPE_SPEED +
-        fullTexts.name.length * TYPE_SPEED +
-        fullTexts.studentId.length * TYPE_SPEED +
-        fullTexts.description.length * TYPE_SPEED +
-        1200
-    );
-    typeText(
-      fullTexts.howToUseText,
-      setTypedHowToUseText,
-      fullTexts.heading.length * TYPE_SPEED +
-        fullTexts.name.length * TYPE_SPEED +
-        fullTexts.studentId.length * TYPE_SPEED +
-        fullTexts.description.length * TYPE_SPEED +
-        fullTexts.howToUseHeading.length * TYPE_SPEED +
-        1600
-    );
+    // Stagger typing with cumulative delays
+    const headingDelay = 0;
+    const nameDelay = texts.heading.length * TYPE_SPEED + 300;
+    const studentIdDelay = nameDelay + texts.name.length * TYPE_SPEED + 300;
+    const descDelay = studentIdDelay + texts.studentId.length * TYPE_SPEED + 300;
+    const howToHeadingDelay =
+      descDelay + texts.description.length * TYPE_SPEED + 300;
+    const howToTextDelay =
+      howToHeadingDelay + texts.howToUseHeading.length * TYPE_SPEED + 400;
+
+    typeWriter(texts.heading, setTypedHeading, headingDelay);
+    typeWriter(texts.name, setTypedName, nameDelay);
+    typeWriter(texts.studentId, setTypedStudentId, studentIdDelay);
+    typeWriter(texts.description, setTypedDescription, descDelay);
+    typeWriter(texts.howToUseHeading, setTypedHowToUseHeading, howToHeadingDelay);
+    typeWriter(texts.howToUseText, setTypedHowToUseText, howToTextDelay);
   }, []);
 
-  // Animations variants for container and individual paragraphs
-  const containerVariants = {
+  // Motion variants for animation
+  const containerVariants: Variants = {
     hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
@@ -95,7 +68,7 @@ const About: React.FC = () => {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
@@ -192,15 +165,15 @@ const About: React.FC = () => {
           className="texty mb-8 max-w-3xl leading-relaxed text-gray-600 dark:text-white text-lg"
           aria-label="How to Use This Site Text"
         >
-          {typedHowToUseText.split("Hello.html").map((part, index, arr) => (
-            <>
+          {typedHowToUseText.split("Hello.html").map((part, idx, arr) => (
+            <React.Fragment key={idx}>
               {part}
-              {index !== arr.length - 1 && (
+              {idx !== arr.length - 1 && (
                 <code className="rounded bg-gray-700 px-1.5 py-0.5 text-xs text-gray-300 dark:bg-gray-600">
                   Hello.html
                 </code>
               )}
-            </>
+            </React.Fragment>
           ))}
         </motion.p>
 
@@ -211,7 +184,7 @@ const About: React.FC = () => {
           aria-label="About Video"
         >
           <iframe
-            className="h-full w-full"
+            className="w-full h-full"
             src="https://www.youtube.com/embed/dQw4w9WgXcQ"
             title="About Video"
             frameBorder="0"

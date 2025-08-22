@@ -10,7 +10,9 @@ body, html {
   background: #f9fafb;
   font-family: "Inter", sans-serif;
 }
-
+.dark .texty{
+  color: #f9fafb;
+}
 .dark body, .dark html {
   background: #181c24;
 }

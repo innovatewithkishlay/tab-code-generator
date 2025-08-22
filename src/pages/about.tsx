@@ -1,25 +1,214 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+
+const TYPE_SPEED = 60; // ms per character
 
 const About: React.FC = () => {
+  const fullTexts = {
+    heading: "About Me",
+    name: "Name: Rohan Khurana",
+    studentId: "Student ID: 21358295",
+    description:
+      "This page is part of the HTML5 Tab Generator project for the university assignment.",
+    howToUseHeading: "How to Use This Site",
+    howToUseText:
+      "This site allows users to generate HTML tabs with code that is fully inline styled for easy sharing and use. Simply navigate to the Code Generator, input your content and customize styles as needed, then copy the generated code. Save the output as an HTML file (for example, Hello.html) and open it in any web browser to view your styled tabs. The intuitive interface helps users create clean, portable HTML snippets quickly without the need for external CSS files.",
+  };
+
+  // State for typed text
+  const [typedHeading, setTypedHeading] = useState("");
+  const [typedName, setTypedName] = useState("");
+  const [typedStudentId, setTypedStudentId] = useState("");
+  const [typedDescription, setTypedDescription] = useState("");
+  const [typedHowToUseHeading, setTypedHowToUseHeading] = useState("");
+  const [typedHowToUseText, setTypedHowToUseText] = useState("");
+
+  // Function to incrementally type text
+  const typeText = (
+    text: string,
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    delayBeforeStart = 0
+  ) => {
+    let index = 0;
+    setTimeout(() => {
+      const interval = setInterval(() => {
+        setter(text.slice(0, index + 1));
+        index++;
+        if (index === text.length) {
+          clearInterval(interval);
+        }
+      }, TYPE_SPEED);
+    }, delayBeforeStart);
+  };
+
+  useEffect(() => {
+    // Sequential typing for block of texts with delays
+    typeText(fullTexts.heading, setTypedHeading);
+    typeText(
+      fullTexts.name,
+      setTypedName,
+      fullTexts.heading.length * TYPE_SPEED + 300
+    );
+    typeText(
+      fullTexts.studentId,
+      setTypedStudentId,
+      fullTexts.heading.length * TYPE_SPEED +
+        fullTexts.name.length * TYPE_SPEED +
+        600
+    );
+    typeText(
+      fullTexts.description,
+      setTypedDescription,
+      fullTexts.heading.length * TYPE_SPEED +
+        fullTexts.name.length * TYPE_SPEED +
+        fullTexts.studentId.length * TYPE_SPEED +
+        900
+    );
+    typeText(
+      fullTexts.howToUseHeading,
+      setTypedHowToUseHeading,
+      fullTexts.heading.length * TYPE_SPEED +
+        fullTexts.name.length * TYPE_SPEED +
+        fullTexts.studentId.length * TYPE_SPEED +
+        fullTexts.description.length * TYPE_SPEED +
+        1200
+    );
+    typeText(
+      fullTexts.howToUseText,
+      setTypedHowToUseText,
+      fullTexts.heading.length * TYPE_SPEED +
+        fullTexts.name.length * TYPE_SPEED +
+        fullTexts.studentId.length * TYPE_SPEED +
+        fullTexts.description.length * TYPE_SPEED +
+        fullTexts.howToUseHeading.length * TYPE_SPEED +
+        1600
+    );
+  }, []);
+
+  // Animations variants for container and individual paragraphs
+  const containerVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { staggerChildren: 0.3, when: "beforeChildren" },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
   return (
-    <div className="app-content min-h-screen bg-inherit p-6 pt-20 font-sans flex justify-center">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="app-content min-h-screen bg-inherit p-6 pt-20 font-sans flex justify-center"
+    >
       <div className="w-full max-w-4xl">
-        <div className="fixed top-4 left-4 font-bold">Student ID: 21358295</div>
+        <motion.h1
+          variants={itemVariants}
+          className="texty mb-6 text-4xl font-semibold tracking-tight text-gray-900 dark:text-white"
+          aria-label="About Me Heading"
+        >
+          {typedHeading}
+          <motion.span
+            className="inline-block ml-1"
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+          >
+            |
+          </motion.span>
+        </motion.h1>
 
-        <h1 className="mb-6 text-3xl  font-semibold">About Me</h1>
-        <p className="mb-3 text-gray-700">Name: Rohan Khurana</p>
-        <p className="mb-8 max-w-3xl leading-relaxed text-gray-600">
-          This page is part of the HTML5 Tab Generator project for the university assignment.
-        </p>
+        <motion.p
+          variants={itemVariants}
+          className="texty mb-3 text-gray-700 dark:text-white font-medium text-lg"
+          aria-label="Name"
+        >
+          {typedName}
+          <motion.span
+            className="inline-block ml-1"
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+          >
+            |
+          </motion.span>
+        </motion.p>
 
-        <h2 className="mb-5 text-2xl font-semibold">How to Use This Site</h2>
-        <p className="mb-8 max-w-3xl leading-relaxed text-gray-600">
-          This site allows users to generate HTML tabs with code that is fully inline styled for easy sharing and use. Simply navigate to the Code Generator, input your content and customize styles as needed, then copy the generated code. Save the output as an HTML file (for example, <code>Hello.html</code>) and open it in any web browser to view your styled tabs. The intuitive interface helps users create clean, portable HTML snippets quickly without the need for external CSS files.
-        </p>
+        <motion.p
+          variants={itemVariants}
+          className="texty mb-3 text-gray-700 dark:text-white font-medium text-lg"
+          aria-label="Student ID"
+        >
+          {typedStudentId}
+          <motion.span
+            className="inline-block ml-1"
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+          >
+            |
+          </motion.span>
+        </motion.p>
 
-        <div
+        <motion.p
+          variants={itemVariants}
+          className="texty mb-8 max-w-3xl leading-relaxed text-gray-600 dark:text-white text-lg"
+          aria-label="Description"
+        >
+          {typedDescription}
+          <motion.span
+            className="inline-block ml-1"
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+          >
+            |
+          </motion.span>
+        </motion.p>
+
+        <motion.h2
+          variants={itemVariants}
+          className="texty mb-5 text-3xl font-semibold text-gray-900 dark:text-white"
+          aria-label="How to Use This Site Heading"
+        >
+          {typedHowToUseHeading}
+          <motion.span
+            className="inline-block ml-1"
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+          >
+            |
+          </motion.span>
+        </motion.h2>
+
+        <motion.p
+          variants={itemVariants}
+          className="texty mb-8 max-w-3xl leading-relaxed text-gray-600 dark:text-white text-lg"
+          aria-label="How to Use This Site Text"
+        >
+          {typedHowToUseText.split("Hello.html").map((part, index, arr) => (
+            <>
+              {part}
+              {index !== arr.length - 1 && (
+                <code className="rounded bg-gray-700 px-1.5 py-0.5 text-xs text-gray-300 dark:bg-gray-600">
+                  Hello.html
+                </code>
+              )}
+            </>
+          ))}
+        </motion.p>
+
+        <motion.div
+          variants={itemVariants}
           className="video-container mb-12 max-w-3xl overflow-hidden rounded-lg shadow-lg"
           style={{ aspectRatio: "16 / 9" }}
+          aria-label="About Video"
         >
           <iframe
             className="h-full w-full"
@@ -29,9 +218,9 @@ const About: React.FC = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -114,6 +114,8 @@ This project is a Next.js (v15.5.0) + TypeScript + TailwindCSS web application t
 **Student ID:** 21358295  
 **Date:** August 2025
 
+Some parts of this project, particularly for troubleshooting errors and optimizing code, were assisted by AI tools such as ChatGPT and GitHub Copilot. These tools were used sparingly and responsibly to improve development efficiency.
+
 ---
 
 ## License

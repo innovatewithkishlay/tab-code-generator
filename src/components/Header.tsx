@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { label: "Pre-lab Questions", path: "/pre-lab" },
   { label: "Escape Room", path: "/escape-room" },
   { label: "Coding Races", path: "/coding-races" },
+  { label: "Court Room", path: "/CourtRoom" },
   { label: "About", path: "/about" },
 ];
 

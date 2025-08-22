@@ -276,6 +276,9 @@ ${scriptBlock}
 
       {showMarkup && generatedMarkup && (
         <div className="mb-10">
+          <p className="mb-2 font-medium text-gray-700 dark:text-gray-300">
+            Save as <code>Hello.html</code> and open in a browser.
+          </p>
           <textarea
             readOnly
             ref={textareaRef}

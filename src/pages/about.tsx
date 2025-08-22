@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, Variants } from "framer-motion";
 
-const TYPE_SPEED = 60; // milliseconds per character for typing effect
+const TYPE_SPEED = 60; 
 
 const About: React.FC = () => {
   const texts = {
@@ -15,7 +15,6 @@ const About: React.FC = () => {
       "This site allows users to generate HTML tabs with code that is fully inline styled for easy sharing and use. Simply navigate to the Code Generator, input your content and customize styles as needed, then copy the generated code. Save the output as an HTML file (for example, Hello.html) and open it in any web browser to view your styled tabs. The intuitive interface helps users create clean, portable HTML snippets quickly without the need for external CSS files.",
   };
 
-  // States to control typed text for each section
   const [typedHeading, setTypedHeading] = useState("");
   const [typedName, setTypedName] = useState("");
   const [typedStudentId, setTypedStudentId] = useState("");
@@ -23,7 +22,6 @@ const About: React.FC = () => {
   const [typedHowToUseHeading, setTypedHowToUseHeading] = useState("");
   const [typedHowToUseText, setTypedHowToUseText] = useState("");
 
-  // Function to type text progressively
   const typeWriter = (
     text: string,
     updateFunc: React.Dispatch<React.SetStateAction<string>>,
@@ -40,7 +38,6 @@ const About: React.FC = () => {
   };
 
   useEffect(() => {
-    // Stagger typing with cumulative delays
     const headingDelay = 0;
     const nameDelay = texts.heading.length * TYPE_SPEED + 300;
     const studentIdDelay = nameDelay + texts.name.length * TYPE_SPEED + 300;
@@ -58,7 +55,6 @@ const About: React.FC = () => {
     typeWriter(texts.howToUseText, setTypedHowToUseText, howToTextDelay);
   }, []);
 
-  // Motion variants for animation
   const containerVariants: Variants = {
     hidden: { opacity: 0, y: 15 },
     visible: {
